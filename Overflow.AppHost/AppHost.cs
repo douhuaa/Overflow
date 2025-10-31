@@ -5,8 +5,17 @@ var keycloak = builder
 	.AddKeycloak("keycloak", 6001)
 	.WithDataVolume("keycloak-data");
 
+var postgres = builder
+	.AddPostgres("postgres", port: 5432)
+	.WithDataVolume("postgres-data")
+	.WithPgAdmin();
+
+var questionDb = postgres.AddDatabase("question-db");
+
 var questionService = builder
 	.AddProject<QuestionService>("question-service")
+	.WithReference(questionDb)
+	.WaitFor(questionDb)
 	.WithReference(keycloak)
 	.WaitFor(keycloak);
 
