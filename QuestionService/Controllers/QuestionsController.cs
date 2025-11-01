@@ -50,4 +50,32 @@ public class QuestionsController(QuestionDbContext db) : ControllerBase
 
 		return Created($"/questions/{question.Id}", question);
 	}
+
+	[HttpGet]
+	public async Task<ActionResult<List<Question>>> GetQuestions(string? tag)
+	{
+		var query = db.Questions.AsQueryable();
+
+		if (!string.IsNullOrEmpty(tag))
+		{
+			query = query.Where(x => x.TagSlugs.Contains(tag));
+		}
+
+		return await query
+			.OrderByDescending(x => x.CreatedAt)
+			.ToListAsync();
+	}
+
+	[HttpGet("{id}")]
+	public async Task<ActionResult<Question>> GetQuestion(string id)
+	{
+		var question = await db.Questions.FindAsync(id);
+		if (question is null)
+			return NotFound();
+		await db
+			.Questions
+			.Where(x => x.Id == id)
+			.ExecuteUpdateAsync(setters => setters.SetProperty(x => x.ViewCount, x => x.ViewCount + 1));
+		return question;
+	}
 }
