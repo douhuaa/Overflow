@@ -16,6 +16,21 @@ public class QuestionsController(QuestionDbContext db) : ControllerBase
 	[HttpPost]
 	public async Task<ActionResult<Question>> CreateQuestion(CreateQuestionDto dto)
 	{
+		var validTags = await db
+			.Tags
+			.Where(tag => dto.Tags.Contains(tag.Slug))
+			.ToListAsync();
+
+		var missing = dto
+			.Tags
+			.Except(validTags
+				.Select(x => x.Slug)
+				.ToList())
+			.ToList();
+
+		if (missing.Count > 0)
+			return BadRequest($"Invalid tags: {string.Join(", ", missing)}");
+
 		var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 		var name = User.FindFirstValue("name");
 
