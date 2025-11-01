@@ -78,4 +78,57 @@ public class QuestionsController(QuestionDbContext db) : ControllerBase
 			.ExecuteUpdateAsync(setters => setters.SetProperty(x => x.ViewCount, x => x.ViewCount + 1));
 		return question;
 	}
+
+	[Authorize]
+	[HttpPut("{id}")]
+	public async Task<ActionResult> UpdateQuestion(string id, CreateQuestionDto dto)
+	{
+		var question = await db.Questions.FindAsync(id);
+		if (question is null)
+			return NotFound();
+
+		var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+		if (userId != question.AskerId)
+			return Forbid();
+
+		var validTags = await db
+			.Tags
+			.Where(tag => dto.Tags.Contains(tag.Slug))
+			.ToListAsync();
+
+		var missing = dto
+			.Tags
+			.Except(validTags
+				.Select(x => x.Slug)
+				.ToList())
+			.ToList();
+
+		if (missing.Count > 0)
+			return BadRequest($"Invalid tags: {string.Join(", ", missing)}");
+
+		question.Title = dto.Title;
+		question.Content = dto.Content;
+		question.TagSlugs = dto.Tags;
+		question.UpdatedAt = DateTime.UtcNow;
+
+		await db.SaveChangesAsync();
+		return NoContent();
+	}
+
+	[Authorize]
+	[HttpDelete("{id}")]
+	public async Task<ActionResult> DeleteQuestion(string id)
+	{
+		var question = await db.Questions.FindAsync(id);
+		if (question is null)
+			return NotFound();
+
+		var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+		if (userId != question.AskerId)
+			return Forbid();
+
+		db.Questions.Remove(question);
+		await db.SaveChangesAsync();
+		return NoContent();
+	}
 }
