@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8"/>
+    <PackageReference Include="Typesense" Version="7.36.0"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Overflow.ServiceDefaults\Overflow.ServiceDefaults.csproj"/>
   </ItemGroup>
 
 </Project>

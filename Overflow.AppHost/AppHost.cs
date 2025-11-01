@@ -12,6 +12,19 @@ var postgres = builder
 		.WithHostPort(5050)
 		.WithImageTag("9.9"));
 
+var typesense = builder
+	.AddContainer("typesense", "typesense/typesense")
+	.WithImageTag("29.0")
+	.WithArgs("--data-dir",
+	"/data",
+	"--api-key",
+	"xyz",
+	"--enable-cors")
+	.WithVolume("typesense-data", "/data")
+	.WithHttpEndpoint(8108, 8108, name: "typesense");
+
+var typesenseContainer = typesense.GetEndpoint("typesense");
+
 var questionDb = postgres.AddDatabase("question-db");
 
 var questionService = builder
@@ -20,6 +33,11 @@ var questionService = builder
 	.WaitFor(questionDb)
 	.WithReference(keycloak)
 	.WaitFor(keycloak);
+
+var searchService = builder
+	.AddProject<SearchService>("search-service")
+	.WithReference(typesenseContainer)
+	.WaitFor(typesense);
 
 builder
 	.Build()
