@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Contracts;
+using FastExpressionCompiler;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -100,6 +101,12 @@ public class QuestionsController(QuestionDbContext db, IMessageBus bus, TagServi
 		question.UpdatedAt = DateTime.UtcNow;
 
 		await db.SaveChangesAsync();
+
+		await bus.PublishAsync(new QuestionUpdated(question.Id,
+		question.Title,
+		question.Content,
+		question.TagSlugs.AsArray()));
+
 		return NoContent();
 	}
 
@@ -117,6 +124,9 @@ public class QuestionsController(QuestionDbContext db, IMessageBus bus, TagServi
 
 		db.Questions.Remove(question);
 		await db.SaveChangesAsync();
+
+		await bus.PublishAsync(new QuestionDeleted(question.Id));
+
 		return NoContent();
 	}
 }
