@@ -6,15 +6,19 @@ builder.Services.AddOpenApi();
 builder.AddServiceDefaults();
 
 var typesenseUri = builder.Configuration["services:typesense:typesense:0"];
-Console.WriteLine($"{typesenseUri}");
 
 if (string.IsNullOrWhiteSpace(typesenseUri))
 	throw new InvalidOperationException("typesense URI is not found in config");
 
+var typesenseApiKey = builder.Configuration["typesense-api-key"];
+
+if (string.IsNullOrWhiteSpace(typesenseApiKey))
+	throw new InvalidOperationException("typesense API key is not found in config");
+
 var uri = new Uri(typesenseUri);
 builder.Services.AddTypesenseClient(config =>
 {
-	config.ApiKey = "xyz";
+	config.ApiKey = typesenseApiKey;
 	config.Nodes =
 	[
 		new Node(uri.Host, uri.Port.ToString(), uri.Scheme)

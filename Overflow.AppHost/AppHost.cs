@@ -12,13 +12,14 @@ var postgres = builder
 		.WithHostPort(5050)
 		.WithImageTag("9.9"));
 
+var typesenseApiKey = builder.AddParameter("typesense-api-key", secret: true);
 var typesense = builder
 	.AddContainer("typesense", "typesense/typesense")
 	.WithImageTag("29.0")
 	.WithArgs("--data-dir",
 	"/data",
 	"--api-key",
-	"xyz",
+	typesenseApiKey,
 	"--enable-cors")
 	.WithVolume("typesense-data", "/data")
 	.WithHttpEndpoint(8108, 8108, name: "typesense");
@@ -36,6 +37,7 @@ var questionService = builder
 
 var searchService = builder
 	.AddProject<SearchService>("search-service")
+	.WithEnvironment("typesense-api-key", typesenseApiKey)
 	.WithReference(typesenseContainer)
 	.WaitFor(typesense);
 
