@@ -8,7 +8,9 @@ var keycloak = builder
 var postgres = builder
 	.AddPostgres("postgres", port: 5432)
 	.WithDataVolume("postgres-data")
-	.WithPgAdmin();
+	.WithPgAdmin(pgAdmin => pgAdmin
+		.WithHostPort(5050)
+		.WithImageTag("9.9"));
 
 var questionDb = postgres.AddDatabase("question-db");
 
