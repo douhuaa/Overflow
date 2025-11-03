@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Hosting;
 using Projects;
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -7,12 +8,10 @@ var compose = builder
 
 var keycloak = builder
 	.AddKeycloak("keycloak", 6001)
-	.WithEndpoint(6001,
-	8080,
-	"keycloak",
-	isExternal: true)
 	.WithEnvironment("KC_HTTP_ENABLED", "true")
 	.WithEnvironment("KC_HOSTNAME_STRICT", "false")
+	.WithEnvironment("VIRTUAL_HOST", "id.overflow.local")
+	.WithEnvironment("VIRTUAL_PORT", "8080")
 	.WithRealmImport("../infra/realms")
 	.WithDataVolume("keycloak-data");
 
@@ -68,11 +67,24 @@ var yarp = builder
 		yarpBuilder.AddRoute("/search/{**catch-all}", searchService);
 	})
 	.WithEnvironment("ASPNETCORE_URLS", "http://*:8001")
+	.WithEnvironment("VIRTUAL_HOST", "api.overflow.local")
+	.WithEnvironment("VIRTUAL_PORT", "8001")
 	.WithEndpoint(port: 8001,
 	targetPort: 8001,
 	scheme: "http",
 	name: "gateway",
 	isExternal: true);
+
+if (!builder.Environment.IsDevelopment())
+{
+	builder
+		.AddContainer("nginx-porxy", "nginxproxy/nginx-proxy", "1.8")
+		.WithEndpoint(80,
+		80,
+		"nginx",
+		isExternal: true)
+		.WithBindMount("/var/run/docker.sock", "/tmp/docker.sock", true);
+}
 
 builder
 	.Build()
