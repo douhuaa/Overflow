@@ -50,6 +50,22 @@ var searchService = builder
 	.WithReference(typesenseContainer)
 	.WaitFor(typesense);
 
+var yarp = builder
+	.AddYarp("gateway")
+	.WithConfiguration(yarpBuilder =>
+	{
+		yarpBuilder.AddRoute("/questions/{**catch-all}", questionService);
+		yarpBuilder.AddRoute("/tags/{**catch-all}", questionService);
+		yarpBuilder.AddRoute("/test/{**catch-all}", questionService);
+		yarpBuilder.AddRoute("/search/{**catch-all}", searchService);
+	})
+	.WithEnvironment("ASPNETCORE_URLS", "http://*:8001")
+	.WithEndpoint(port: 8001,
+	targetPort: 8001,
+	scheme: "http",
+	name: "gateway",
+	isExternal: true);
+
 builder
 	.Build()
 	.Run();
