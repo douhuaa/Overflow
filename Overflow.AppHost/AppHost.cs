@@ -1,8 +1,19 @@
 using Projects;
 var builder = DistributedApplication.CreateBuilder(args);
 
+var compose = builder
+	.AddDockerComposeEnvironment("production")
+	.WithDashboard(dashboard => dashboard.WithHostPort(8080));
+
 var keycloak = builder
 	.AddKeycloak("keycloak", 6001)
+	.WithEndpoint(6001,
+	8080,
+	"keycloak",
+	isExternal: true)
+	.WithEnvironment("KC_HTTP_ENABLED", "true")
+	.WithEnvironment("KC_HOSTNAME_STRICT", "false")
+	.WithRealmImport("../infra/realms")
 	.WithDataVolume("keycloak-data");
 
 var postgres = builder
@@ -16,11 +27,8 @@ var typesenseApiKey = builder.AddParameter("typesense-api-key", secret: true);
 var typesense = builder
 	.AddContainer("typesense", "typesense/typesense")
 	.WithImageTag("29.0")
-	.WithArgs("--data-dir",
-	"/data",
-	"--api-key",
-	typesenseApiKey,
-	"--enable-cors")
+	.WithArgs("--data-dir", "/data", "--enable-cors")
+	.WithEnvironment("TYPESENSE_API_KEY", typesenseApiKey)
 	.WithVolume("typesense-data", "/data")
 	.WithHttpEndpoint(8108, 8108, name: "typesense");
 
