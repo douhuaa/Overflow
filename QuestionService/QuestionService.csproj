@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Keycloak.Authentication" Version="9.5.2-preview.1.25522.3"/>
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.5.2"/>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">

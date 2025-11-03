@@ -11,18 +11,9 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<TagService>();
+builder.Services.AddKyeCloakAuthentication();
 
 builder.AddServiceDefaults();
-builder
-	.Services
-	.AddAuthentication()
-	.AddKeycloakJwtBearer(serviceName: "keycloak",
-	realm: "overflow",
-	options =>
-	{
-		options.RequireHttpsMetadata = false;
-		options.Audience = "overflow";
-	});
 
 builder.AddNpgsqlDbContext<QuestionDbContext>("question-db");
 
