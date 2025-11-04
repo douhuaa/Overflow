@@ -75,6 +75,11 @@ var yarp = builder
 	name: "gateway",
 	isExternal: true);
 
+var webapp = builder
+	.AddNpmApp("webapp", "../webapp", "dev")
+	.WithReference(keycloak)
+	.WithHttpEndpoint(env: "PORT", port: 3100);
+
 if (!builder.Environment.IsDevelopment())
 {
 	builder
