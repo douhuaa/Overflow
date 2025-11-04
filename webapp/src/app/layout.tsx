@@ -3,6 +3,7 @@ import "./globals.css";
 import Providers from "@/components/Providers";
 import TopNav from "@/components/nav/TopNav";
 import {ReactNode} from "react";
+import SideMenu from "@/components/SideMenu";
 
 export const metadata: Metadata = {
 	title: "Overflow",
@@ -21,7 +22,7 @@ export default function RootLayout({
 			<TopNav/>
 			<div className="flex grow overflow-auto">
 				<aside className={'basis-1/6 shrink-0 border-r border-neutral-500 pt-20 sticky top-0 px-6'}>
-					Side menu
+					<SideMenu/>
 				</aside>
 				<main className={'flex-1 pt-20 h-full'}>
 					{children}
