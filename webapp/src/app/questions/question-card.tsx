@@ -41,8 +41,14 @@ export default function QuestionCard({question}: Props) {
 					<div className={'flex justify-between pt-2'}>
 						<div className={'flex gap-2'}>
 							{question.tagSlugs.map((slug) => (
-								<Link key={slug} href={`/questions?tag=${encodeURIComponent(slug)}`}>
-									<Chip variant={'bordered'}>{slug}</Chip>
+								<Link
+									key={slug}
+									href={`/questions?tag=${encodeURIComponent(slug)}`}
+									className="inline-block"
+								>
+									<Chip as="span" variant="bordered" className="cursor-pointer">
+										{slug}
+									</Chip>
 								</Link>
 							))}
 						</div>
