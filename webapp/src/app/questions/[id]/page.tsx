@@ -1,0 +1,32 @@
+﻿import {getQuestion} from "@/lib/actions/question-actions";
+import Link from "next/link";
+import {Chip} from "@heroui/chip";
+import {Avatar} from "@heroui/avatar";
+import {formatIsoToLocal} from "@/lib/date";
+import {notFound} from "next/navigation";
+import QuestionDetailedHeader from "@/app/questions/[id]/QuestionDetailedHeader";
+import QuestionContent from "@/app/questions/[id]/QuestionContent";
+
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
+export default async function QuestionDetailsPage({params}: { params: Promise<{ id: string }> }) {
+	const {id} = await params;
+	const question = await getQuestion(id);
+	if (!question) return notFound();
+	return (
+		<div className="w-full">
+
+			<QuestionDetailedHeader question={question}/>
+			<QuestionContent question={question}/>
+			<div className="flex gap-2">
+				{question.tagSlugs.map((slug) => (
+					<Link key={slug} href={`/questions?tag=${encodeURIComponent(slug)}`} className="inline-block">
+						<Chip as="span" variant="bordered" className="cursor-pointer">{slug}</Chip>
+					</Link>
+				))}
+			</div>
+		</div>
+	);
+}
