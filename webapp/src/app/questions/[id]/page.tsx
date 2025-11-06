@@ -1,11 +1,11 @@
 ﻿import {getQuestion} from "@/lib/actions/question-actions";
 import Link from "next/link";
 import {Chip} from "@heroui/chip";
-import {Avatar} from "@heroui/avatar";
-import {formatIsoToLocal} from "@/lib/date";
 import {notFound} from "next/navigation";
 import QuestionDetailedHeader from "@/app/questions/[id]/QuestionDetailedHeader";
 import QuestionContent from "@/app/questions/[id]/QuestionContent";
+import AnswerContent from "@/app/questions/[id]/AnswerContent";
+import AnswersHeader from "@/app/questions/[id]/AnswersHeader";
 
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';
@@ -20,6 +20,12 @@ export default async function QuestionDetailsPage({params}: { params: Promise<{ 
 
 			<QuestionDetailedHeader question={question}/>
 			<QuestionContent question={question}/>
+			{question.answers.length > 0 && (
+				<AnswersHeader answerCount={question.answers.length}/>
+			)}
+			{question.answers.map(answer => (
+				<AnswerContent answer={answer} key={answer.id}/>
+			))}
 			<div className="flex gap-2">
 				{question.tagSlugs.map((slug) => (
 					<Link key={slug} href={`/questions?tag=${encodeURIComponent(slug)}`} className="inline-block">
