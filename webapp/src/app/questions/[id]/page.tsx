@@ -26,13 +26,6 @@ export default async function QuestionDetailsPage({params}: { params: Promise<{ 
 			{question.answers.map(answer => (
 				<AnswerContent answer={answer} key={answer.id}/>
 			))}
-			<div className="flex gap-2">
-				{question.tagSlugs.map((slug) => (
-					<Link key={slug} href={`/questions?tag=${encodeURIComponent(slug)}`} className="inline-block">
-						<Chip as="span" variant="bordered" className="cursor-pointer">{slug}</Chip>
-					</Link>
-				))}
-			</div>
 		</div>
 	);
 }
