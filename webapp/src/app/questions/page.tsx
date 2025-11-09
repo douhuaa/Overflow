@@ -5,7 +5,7 @@ import QuestionHeader from "@/app/questions/QuestionHeader";
 export default async function QuestionsPage({
 												searchParams,
 											}: {
-	searchParams: Promise<{ tag?: string }>;
+	searchParams?: Promise<{ tag?: string }>;
 }) {
 	const params = await searchParams;
 	const {data: questions, error} = await getQuestions(params?.tag)

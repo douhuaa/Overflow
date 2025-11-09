@@ -1,4 +1,6 @@
-﻿import {Question} from "@/lib/types";
+﻿'use server'
+
+import {Question} from "@/lib/types";
 import {fetchClient} from "@/lib/api/fetchClient";
 
 export async function getQuestions(tag?: string) {

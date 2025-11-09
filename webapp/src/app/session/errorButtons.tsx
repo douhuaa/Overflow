@@ -7,7 +7,8 @@ export default function ErrorButtons() {
 	const [pending, startTransition] = useTransition();
 	const onClick = (code: number) => {
 		startTransition(async () => {
-			await triggerError(code);
+			const {error} = await triggerError(code);
+			if (error) throw new Error(error.message);
 		})
 	}
 
@@ -19,6 +20,7 @@ export default function ErrorButtons() {
 					color='primary'
 					key={code}
 					type='button'
+					isLoading={pending}
 				>
 					Test {code}
 				</Button>

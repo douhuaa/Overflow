@@ -17,13 +17,16 @@ export async function fetchClient<T>(
 		...(body ? {body: JSON.stringify(body)} : {}),
 		...rest
 	})
+
 	const contentType = response.headers.get('content-type');
 	const isJson =
 		contentType?.includes('application/json')
 		|| contentType?.includes('application/problem+json');
-	const parsed = isJson ? await response.json() : await response.text();	
+	const parsed = isJson ? await response.json() : await response.text();
+
 	if (!response.ok) {
 		if (response.status === 404) return notFound();
+		if (response.status === 500) throw new Error("Server error. Please try again later");
 		let message = '';
 		if (typeof parsed === 'string') {
 			message = parsed
@@ -48,7 +51,7 @@ function getFallbackMessage(status: number) {
 		case 403:
 			return "You do not have permission to access this resource.";
 		case 500:
-			return "Server error. Please try again later}";
+			return "Server error. Please try again later";
 		default:
 			return "Unknown error. Please try again later"
 	}
