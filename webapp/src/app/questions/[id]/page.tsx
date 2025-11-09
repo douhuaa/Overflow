@@ -13,7 +13,8 @@ export const fetchCache = 'force-no-store';
 
 export default async function QuestionDetailsPage({params}: { params: Promise<{ id: string }> }) {
 	const {id} = await params;
-	const question = await getQuestion(id);
+	const {data: question, error} = await getQuestion(id);
+	if (error) throw error;
 	if (!question) return notFound();
 	return (
 		<div className="w-full">

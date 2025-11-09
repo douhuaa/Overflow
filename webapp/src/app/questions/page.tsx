@@ -5,16 +5,15 @@ import QuestionHeader from "@/app/questions/QuestionHeader";
 export default async function QuestionsPage({
 												searchParams,
 											}: {
-	searchParams: Promise<{ tag?: string | string[] }>;
+	searchParams: Promise<{ tag?: string }>;
 }) {
-	const sp = await searchParams;
-	const tagParam = sp?.tag;
-	const tag = Array.isArray(tagParam) ? tagParam[0] : tagParam;
-	const questions = await getQuestions(tag);
+	const params = await searchParams;
+	const {data: questions, error} = await getQuestions(params?.tag)
+	if (error) throw error;
 	return (
 		<>
-			<QuestionHeader total={questions.length} tag={tag}/>
-			{questions.map((question) => (
+			<QuestionHeader total={questions?.length || 0} tag={params?.tag}/>
+			{questions?.map((question) => (
 				<div key={question.id} className='py-4 not-last:border-b w-full flex'>
 					<QuestionCard key={question.id} question={question}/>
 				</div>
