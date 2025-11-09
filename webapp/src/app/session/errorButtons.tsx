@@ -1,14 +1,18 @@
 ﻿'use client'
 import {Button} from "@heroui/button";
 import {triggerError} from "@/lib/actions/error-actions";
-import {useTransition} from "react";
+import {useState, useTransition} from "react";
+import {handleError} from "@/lib/util";
 
 export default function ErrorButtons() {
 	const [pending, startTransition] = useTransition();
+	const [target, setTarget] = useState(0);
 	const onClick = (code: number) => {
+		setTarget(code);
 		startTransition(async () => {
 			const {error} = await triggerError(code);
-			if (error) throw new Error(error.message);
+			if (error) handleError(error);
+			setTarget(0);
 		})
 	}
 
@@ -20,7 +24,7 @@ export default function ErrorButtons() {
 					color='primary'
 					key={code}
 					type='button'
-					isLoading={pending}
+					isLoading={pending && target === code}
 				>
 					Test {code}
 				</Button>
