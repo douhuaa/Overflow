@@ -5,6 +5,7 @@ import ThemeToggle from "@/components/nav/ThemeToggle";
 import SearchInput from "@/components/nav/SearchInput";
 import LoginButton from "@/components/nav/LoginButton";
 import {getCurrentUser} from "@/lib/actions/tag-actions";
+import UserMenu from "@/components/nav/userMenu";
 
 export default async function TopNav() {
 	const user = await getCurrentUser();
@@ -26,7 +27,7 @@ export default async function TopNav() {
 				<div className={'flex basis-1/4 shrink-0 justify-end gap-3 items-center'}>
 					<ThemeToggle/>
 					{user ? (
-						<div>{user.name}</div>
+						<UserMenu user={user}/>
 					) : (
 						<>
 							<LoginButton/>
