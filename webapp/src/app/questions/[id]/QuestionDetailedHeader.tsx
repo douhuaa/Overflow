@@ -1,8 +1,8 @@
 ﻿import {Question} from "@/lib/types";
 import Link from "next/link";
 import {Button} from "@heroui/button";
-import {formatIsoToLocal} from "@/lib/date";
 import {Avatar} from "@heroui/avatar";
+import {fuzzyTimeAgo} from "@/lib/util";
 
 type Props = {
 	question: Question;
@@ -22,9 +22,9 @@ export default function QuestionDetailedHeader({question}: Props) {
 			<div className="text-sm text-foreground-500 flex items-center gap-2">
 				<Avatar className="h-6 w-6" color="secondary" name={question.askerDisplayName.charAt(0)}/>
 				<Link href={`/profiles/${question.askerId}`}>{question.askerDisplayName}</Link>
-				<span title={question.createdAt}>asked {formatIsoToLocal(question.createdAt)}</span>
+				<span title={question.createdAt}>asked {fuzzyTimeAgo(question.createdAt)}</span>
 				{question.updatedAt && (
-					<span title={question.updatedAt}>Modified {formatIsoToLocal(question.createdAt)}</span>
+					<span title={question.updatedAt}>Modified {fuzzyTimeAgo(question.createdAt)}</span>
 				)}
 				<span>·</span>
 				<span>{question.viewCount} {question.viewCount === 1 ? 'view' : 'views'}</span>

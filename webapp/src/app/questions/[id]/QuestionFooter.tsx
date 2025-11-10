@@ -3,6 +3,7 @@ import {Chip} from "@heroui/chip";
 import Link from "next/link";
 import {Avatar} from "@heroui/avatar";
 import {formatIsoToLocal} from "@/lib/date";
+import {fuzzyTimeAgo, timeAgo} from "@/lib/util";
 
 type Props = {
 	quesiton: Question
@@ -23,7 +24,7 @@ export default function QuestionFooter({quesiton}: Props) {
 			</div>
 			<div className='flex flex-col basis-2/5  bg-primary/10 px-3 gap-2 rounded-lg'>
 				<span className='text-sm font-extralight'>
-					asked {formatIsoToLocal(quesiton.createdAt)}
+					asked {timeAgo(quesiton.createdAt)}
 				</span>
 				<div className='flex items-center gap-3'>
 					<Avatar className='h-6 w-6'
