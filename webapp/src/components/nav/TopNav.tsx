@@ -4,8 +4,10 @@ import {Button} from "@heroui/button";
 import ThemeToggle from "@/components/nav/ThemeToggle";
 import SearchInput from "@/components/nav/SearchInput";
 import LoginButton from "@/components/nav/LoginButton";
+import {getCurrentUser} from "@/lib/actions/tag-actions";
 
-export default function TopNav() {
+export default async function TopNav() {
+	const user = await getCurrentUser();
 	return (
 		<header className={'p-2 w-full fixed -top-0 z-50 border-b bg-white dark:bg-black'}>
 			<div className={'flex items-center justify-between px-10 mx-auto'}>
@@ -21,10 +23,16 @@ export default function TopNav() {
 					</nav>
 				</div>
 				<SearchInput/>
-				<div className={'flex basis-1/4 shrink-0 justify-end gap-3'}>
+				<div className={'flex basis-1/4 shrink-0 justify-end gap-3 items-center'}>
 					<ThemeToggle/>
-					<LoginButton/>
-					<Button color={'secondary'}>Register</Button>
+					{user ? (
+						<div>{user.name}</div>
+					) : (
+						<>
+							<LoginButton/>
+							<Button color={'secondary'}>Register</Button>
+						</>
+					)}
 				</div>
 			</div>
 		</header>
