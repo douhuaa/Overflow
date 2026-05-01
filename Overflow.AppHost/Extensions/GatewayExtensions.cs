@@ -1,4 +1,5 @@
 using Overflow.AppHost.Configuration;
+using Overflow.AppHost.Models;
 
 namespace Overflow.AppHost.Extensions;
 
@@ -6,13 +7,12 @@ internal static class GatewayExtensions
 {
 	public static void AddGateway(
 		this IDistributedApplicationBuilder builder,
-		IResourceBuilder<ProjectResource> questionsApi,
-		IResourceBuilder<ProjectResource> searchApi)
+		ApplicationSlices slices)
 	{
 		var aspNetCoreUrls = $"http://*:{AppHostConstants.GatewayPort}";
 		builder
 			.AddYarp("gateway")
-			.WithConfiguration(yarp => MapGatewayRoutes(yarp, questionsApi, searchApi))
+			.WithConfiguration(yarp => MapGatewayRoutes(yarp, slices))
 			.WithEnvironment(EnvironmentVariableNames.AspNetCoreUrls, aspNetCoreUrls)
 			.WithEnvironment(EnvironmentVariableNames.VirtualHost, AppHostConstants.ApiVirtualHost)
 			.WithEnvironment(EnvironmentVariableNames.VirtualPort, AppHostConstants.GatewayPort.ToString())
@@ -26,12 +26,11 @@ internal static class GatewayExtensions
 
 	private static void MapGatewayRoutes(
 		IYarpConfigurationBuilder yarp,
-		IResourceBuilder<ProjectResource> questionsApi,
-		IResourceBuilder<ProjectResource> searchApi)
+		ApplicationSlices slices)
 	{
-		yarp.AddRoute("/questions/{**catch-all}", questionsApi);
-		yarp.AddRoute("/tags/{**catch-all}", questionsApi);
-		yarp.AddRoute("/test/{**catch-all}", questionsApi);
-		yarp.AddRoute("/search/{**catch-all}", searchApi);
+		yarp.AddRoute("/questions/{**catch-all}", slices.QuestionsApi);
+		yarp.AddRoute("/tags/{**catch-all}", slices.QuestionsApi);
+		yarp.AddRoute("/test/{**catch-all}", slices.QuestionsApi);
+		yarp.AddRoute("/search/{**catch-all}", slices.SearchApi);
 	}
 }

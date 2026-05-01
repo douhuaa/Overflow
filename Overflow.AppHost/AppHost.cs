@@ -5,11 +5,9 @@ var builder = DistributedApplication.CreateBuilder(args);
 builder.AddAppEnvironment();
 
 var infrastructure = builder.AddInfrastructure();
+var slices = builder.AddApplicationSlices(infrastructure);
 
-var questionsApi = builder.AddQuestionsSlice(infrastructure);
-var searchApi = builder.AddSearchSlice(infrastructure);
-
-builder.AddGateway(questionsApi, searchApi);
+builder.AddGateway(slices);
 builder.AddFrontend(infrastructure.Keycloak);
 builder.AddReverseProxyIfNeeded();
 
