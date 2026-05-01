@@ -5,7 +5,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 builder.AddAppEnvironment();
 
 var infrastructure = builder.AddInfrastructure();
-var slices = builder.AddApplicationSlices(infrastructure);
+var slices = builder.AddAppSlices(infrastructure);
 
 builder.AddGateway(slices);
 builder.AddFrontend(infrastructure.Keycloak);

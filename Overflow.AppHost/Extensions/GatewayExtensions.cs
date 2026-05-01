@@ -7,7 +7,7 @@ internal static class GatewayExtensions
 {
 	public static void AddGateway(
 		this IDistributedApplicationBuilder builder,
-		ApplicationSlices slices)
+		AppSlices slices)
 	{
 		var aspNetCoreUrls = $"http://*:{AppHostConstants.GatewayPort}";
 		builder
@@ -26,7 +26,7 @@ internal static class GatewayExtensions
 
 	private static void MapGatewayRoutes(
 		IYarpConfigurationBuilder yarp,
-		ApplicationSlices slices)
+		AppSlices slices)
 	{
 		yarp.AddRoute("/questions/{**catch-all}", slices.QuestionsApi);
 		yarp.AddRoute("/tags/{**catch-all}", slices.QuestionsApi);
