@@ -12,7 +12,7 @@ internal static class SearchSliceExtensions
 	{
 		return builder
 			.AddProject<SearchService>("search-service")
-			.WithEnvironment("typesense-api-key", infra.TypesenseApiKey)
+			.WithEnvironment(AppHostConstants.TypesenseApiKeyParameter, infra.TypesenseApiKey)
 			.WithReference(infra.RabbitMq)
 			.WaitFor(infra.RabbitMq)
 			.WithReference(infra.TypesenseEndpoint)

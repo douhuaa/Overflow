@@ -1,4 +1,5 @@
 using Aspire.Hosting.Keycloak;
+using Overflow.AppHost.Configuration;
 
 namespace Overflow.AppHost.Models;
 
@@ -10,5 +11,5 @@ internal sealed record AppInfrastructure(
 	IResourceBuilder<ContainerResource> Typesense,
 	IResourceBuilder<ParameterResource> TypesenseApiKey)
 {
-	public EndpointReference TypesenseEndpoint => Typesense.GetEndpoint("typesense");
+	public EndpointReference TypesenseEndpoint => Typesense.GetEndpoint(AppHostConstants.TypesenseEndpointName);
 }

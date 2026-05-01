@@ -3,6 +3,7 @@ namespace Overflow.AppHost.Configuration;
 internal static class AppHostConstants
 {
 	public const int DashboardPort = 8080;
+	public const int KeycloakInternalHttpPort = 8080;
 	public const int KeycloakPort = 6001;
 	public const int PostgresPort = 5432;
 	public const int TypesensePort = 8108;
@@ -14,6 +15,8 @@ internal static class AppHostConstants
 
 	public const string ApiVirtualHost = "api.overflow.local";
 	public const string IdentityVirtualHost = "id.overflow.local";
+	public const string TypesenseEndpointName = "typesense";
+	public const string TypesenseApiKeyParameter = "typesense-api-key";
 
 	public static class ImageTags
 	{

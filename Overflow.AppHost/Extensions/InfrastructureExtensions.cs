@@ -13,7 +13,7 @@ internal static class InfrastructureExtensions
 			.WithEnvironment(EnvironmentVariableNames.KcHttpEnabled, "true")
 			.WithEnvironment(EnvironmentVariableNames.KcHostnameStrict, "false")
 			.WithEnvironment(EnvironmentVariableNames.VirtualHost, AppHostConstants.IdentityVirtualHost)
-			.WithEnvironment(EnvironmentVariableNames.VirtualPort, AppHostConstants.DashboardPort.ToString())
+			.WithEnvironment(EnvironmentVariableNames.VirtualPort, AppHostConstants.KeycloakInternalHttpPort.ToString())
 			.WithRealmImport("../infra/realms")
 			.WithDataVolume("keycloak-data");
 
@@ -26,7 +26,7 @@ internal static class InfrastructureExtensions
 
 		var questionsDb = database.AddDatabase("question-db");
 
-		var typesenseApiKey = builder.AddParameter("typesense-api-key", secret: true);
+		var typesenseApiKey = builder.AddParameter(AppHostConstants.TypesenseApiKeyParameter, secret: true);
 
 		var searchEngine = builder
 			.AddContainer("typesense", "typesense/typesense")
@@ -34,7 +34,7 @@ internal static class InfrastructureExtensions
 			.WithArgs("--data-dir", "/data", "--enable-cors")
 			.WithEnvironment(EnvironmentVariableNames.TypesenseApiKey, typesenseApiKey)
 			.WithVolume("typesense-data", "/data")
-			.WithHttpEndpoint(AppHostConstants.TypesensePort, AppHostConstants.TypesensePort, name: "typesense");
+			.WithHttpEndpoint(AppHostConstants.TypesensePort, AppHostConstants.TypesensePort, name: AppHostConstants.TypesenseEndpointName);
 
 		var messageBus = builder
 			.AddRabbitMQ("messaging")
