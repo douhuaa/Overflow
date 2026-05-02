@@ -12,7 +12,7 @@ internal static class AppEnvironmentExtensions
 		// Register typed options for non-sensitive AppHost configuration (ports, image tags, virtual hosts).
 		// Defaults are defined on AppHostOptions; values can be overridden via appsettings.json or environment variables.
 		builder.Services.AddOptions<AppHostOptions>()
-			.BindConfiguration("AppHost");
+			.BindConfiguration(AppHostOptions.SectionName);
 
 		var options = AppHostOptions.FromConfiguration(builder.Configuration);
 

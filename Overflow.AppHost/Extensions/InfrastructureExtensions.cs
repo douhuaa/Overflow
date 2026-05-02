@@ -8,40 +8,40 @@ internal static class InfrastructureExtensions
 {
 	public static AppInfrastructure AddInfrastructure(this IDistributedApplicationBuilder builder)
 	{
-		var options = AppHostOptions.FromConfiguration(builder.Configuration);
+		var options = InfrastructureOptions.FromConfiguration(builder.Configuration);
 
 		var identity = builder
-			.AddKeycloak("keycloak", options.Ports.Keycloak)
+			.AddKeycloak(AppHostResourceNames.Keycloak, options.Identity.HostPort)
 			.WithEnvironment(EnvironmentVariableNames.KcHttpEnabled, "true")
 			.WithEnvironment(EnvironmentVariableNames.KcHostnameStrict, "false")
-			.WithEnvironment(EnvironmentVariableNames.VirtualHost, options.VirtualHosts.Identity)
-			.WithEnvironment(EnvironmentVariableNames.VirtualPort, options.Ports.KeycloakInternal.ToString())
+			.WithEnvironment(EnvironmentVariableNames.VirtualHost, options.Identity.VirtualHost)
+			.WithEnvironment(EnvironmentVariableNames.VirtualPort, options.Identity.InternalHttpPort.ToString())
 			.WithRealmImport("../infra/realms")
 			.WithDataVolume("keycloak-data");
 
 		var database = builder
-			.AddPostgres("postgres", port: options.Ports.Postgres)
+			.AddPostgres(AppHostResourceNames.Postgres, port: options.Postgres.Port)
 			.WithDataVolume("postgres-data")
 			.WithPgAdmin(pgAdmin => pgAdmin
-				.WithHostPort(options.Ports.PgAdmin)
-				.WithImageTag(options.ImageTags.PgAdmin));
+				.WithHostPort(options.Postgres.PgAdminPort)
+				.WithImageTag(options.Postgres.PgAdminImageTag));
 
-		var questionsDb = database.AddDatabase("question-db");
+		var questionsDb = database.AddDatabase(AppHostResourceNames.QuestionDb);
 
-		var typesenseApiKey = builder.AddParameter(AppHostConstants.TypesenseApiKeyParameter, secret: true);
+		var typesenseApiKey = builder.AddParameter(SecretParameterNames.TypesenseApiKey, secret: true);
 
 		var searchEngine = builder
-			.AddContainer("typesense", "typesense/typesense")
-			.WithImageTag(options.ImageTags.Typesense)
+			.AddContainer(AppHostResourceNames.Typesense, "typesense/typesense")
+			.WithImageTag(options.Typesense.ImageTag)
 			.WithArgs("--data-dir", "/data", "--enable-cors")
 			.WithEnvironment(EnvironmentVariableNames.TypesenseApiKey, typesenseApiKey)
 			.WithVolume("typesense-data", "/data")
-			.WithHttpEndpoint(options.Ports.Typesense, options.Ports.Typesense, name: AppHostConstants.TypesenseEndpointName);
+			.WithHttpEndpoint(options.Typesense.Port, options.Typesense.Port, name: AppHostResourceNames.Typesense);
 
 		var messageBus = builder
-			.AddRabbitMQ("messaging")
+			.AddRabbitMQ(AppHostResourceNames.Messaging)
 			.WithDataVolume("rabbitmq-data")
-			.WithManagementPlugin(port: options.Ports.RabbitMqManagement);
+			.WithManagementPlugin(port: options.RabbitMq.ManagementPort);
 
 		return new AppInfrastructure(
 			database,

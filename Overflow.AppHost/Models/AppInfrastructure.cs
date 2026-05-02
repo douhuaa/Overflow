@@ -11,5 +11,5 @@ internal sealed record AppInfrastructure(
 	IResourceBuilder<ContainerResource> Typesense,
 	IResourceBuilder<ParameterResource> TypesenseApiKey)
 {
-	public EndpointReference TypesenseEndpoint => Typesense.GetEndpoint(AppHostConstants.TypesenseEndpointName);
+	public EndpointReference TypesenseEndpoint => Typesense.GetEndpoint(AppHostResourceNames.Typesense);
 }
