@@ -1,5 +1,4 @@
 using Aspire.Hosting.Keycloak;
-using Overflow.AppHost.Configuration;
 
 namespace Overflow.AppHost.Models;
 
@@ -9,7 +8,8 @@ internal sealed record AppInfrastructure(
 	IResourceBuilder<RabbitMQServerResource> RabbitMq,
 	IResourceBuilder<KeycloakResource> Keycloak,
 	IResourceBuilder<ContainerResource> Typesense,
-	IResourceBuilder<ParameterResource> TypesenseApiKey)
+	IResourceBuilder<ParameterResource> TypesenseApiKey,
+	string TypesenseEndpointName)
 {
-	public EndpointReference TypesenseEndpoint => Typesense.GetEndpoint(AppHostConstants.TypesenseEndpointName);
+	public EndpointReference TypesenseEndpoint => Typesense.GetEndpoint(TypesenseEndpointName);
 }

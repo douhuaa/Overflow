@@ -1,10 +1,17 @@
+using Microsoft.Extensions.Configuration;
+using Overflow.AppHost.Configuration.Options;
 using Overflow.AppHost.Extensions;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
 builder.AddAppEnvironment();
 
-var infrastructure = builder.AddInfrastructure();
+var infraOptions = new InfrastructureOptions();
+builder.Configuration
+	.GetSection(InfrastructureOptions.SectionName)
+	.Bind(infraOptions);
+
+var infrastructure = builder.AddInfrastructure(infraOptions);
 var slices = builder.AddAppSlices(infrastructure);
 
 builder.AddGateway(slices);

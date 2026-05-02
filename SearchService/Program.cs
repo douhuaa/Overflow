@@ -16,7 +16,7 @@ var typesenseUri = builder.Configuration["services:typesense:typesense:0"];
 if (string.IsNullOrWhiteSpace(typesenseUri))
 	throw new InvalidOperationException("typesense URI is not found in config");
 
-var typesenseApiKey = builder.Configuration["typesense-api-key"];
+var typesenseApiKey = builder.Configuration["TYPESENSE_API_KEY"];
 
 if (string.IsNullOrWhiteSpace(typesenseApiKey))
 	throw new InvalidOperationException("typesense API key is not found in config");
