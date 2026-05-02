@@ -2,39 +2,68 @@ using Microsoft.Extensions.Configuration;
 
 namespace Overflow.AppHost.Configuration;
 
+/// <summary>
+/// Non-sensitive AppHost configuration for gateway, frontend, and edge infrastructure.
+/// Infrastructure-specific options (ports, image tags) live in per-resource options classes
+/// aggregated by <see cref="InfrastructureOptions"/>.
+/// </summary>
 internal sealed class AppHostOptions
 {
-	public PortOptions Ports { get; init; } = new();
-	public ImageTagOptions ImageTags { get; init; } = new();
-	public VirtualHostOptions VirtualHosts { get; init; } = new();
+	public const string SectionName = "AppHost";
 
-	public static AppHostOptions FromConfiguration(IConfiguration configuration) =>
-		configuration.GetSection("AppHost").Get<AppHostOptions>() ?? new AppHostOptions();
+	public AppHostPortOptions Ports { get; init; } = new();
+	public AppHostImageTagOptions ImageTags { get; init; } = new();
+	public AppHostVirtualHostOptions VirtualHosts { get; init; } = new();
+
+	public static AppHostOptions FromConfiguration(IConfiguration configuration)
+	{
+		var opts = configuration.GetSection(SectionName).Get<AppHostOptions>() ?? new AppHostOptions();
+		opts.Ports.Validate();
+		opts.ImageTags.Validate();
+		opts.VirtualHosts.Validate();
+		return opts;
+	}
 }
 
-internal sealed class PortOptions
+internal sealed class AppHostPortOptions
 {
 	public int Dashboard { get; init; } = 8080;
-	public int Keycloak { get; init; } = 6001;
-	public int KeycloakInternal { get; init; } = 8080;
-	public int Postgres { get; init; } = 5432;
-	public int Typesense { get; init; } = 8108;
-	public int PgAdmin { get; init; } = 5050;
-	public int RabbitMqManagement { get; init; } = 15672;
 	public int Gateway { get; init; } = 8001;
 	public int WebApp { get; init; } = 3100;
 	public int NginxProxy { get; init; } = 80;
+
+	public void Validate()
+	{
+		if (Dashboard <= 0)
+			throw new InvalidOperationException($"{AppHostOptions.SectionName}:Ports:{nameof(Dashboard)} must be > 0 (got {Dashboard}).");
+		if (Gateway <= 0)
+			throw new InvalidOperationException($"{AppHostOptions.SectionName}:Ports:{nameof(Gateway)} must be > 0 (got {Gateway}).");
+		if (WebApp <= 0)
+			throw new InvalidOperationException($"{AppHostOptions.SectionName}:Ports:{nameof(WebApp)} must be > 0 (got {WebApp}).");
+		if (NginxProxy <= 0)
+			throw new InvalidOperationException($"{AppHostOptions.SectionName}:Ports:{nameof(NginxProxy)} must be > 0 (got {NginxProxy}).");
+	}
 }
 
-internal sealed class ImageTagOptions
+internal sealed class AppHostImageTagOptions
 {
-	public string Typesense { get; init; } = "29.0";
-	public string PgAdmin { get; init; } = "9.9";
 	public string NginxProxy { get; init; } = "1.8";
+
+	public void Validate()
+	{
+		if (string.IsNullOrWhiteSpace(NginxProxy))
+			throw new InvalidOperationException($"{AppHostOptions.SectionName}:ImageTags:{nameof(NginxProxy)} must not be empty.");
+	}
 }
 
-internal sealed class VirtualHostOptions
+internal sealed class AppHostVirtualHostOptions
 {
 	public string Api { get; init; } = "api.overflow.local";
-	public string Identity { get; init; } = "id.overflow.local";
+
+	public void Validate()
+	{
+		if (string.IsNullOrWhiteSpace(Api))
+			throw new InvalidOperationException($"{AppHostOptions.SectionName}:VirtualHosts:{nameof(Api)} must not be empty.");
+	}
 }
+
