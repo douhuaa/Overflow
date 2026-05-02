@@ -8,21 +8,23 @@ internal static class InfrastructureExtensions
 {
 	public static AppInfrastructure AddInfrastructure(this IDistributedApplicationBuilder builder)
 	{
+		var options = AppHostOptions.FromConfiguration(builder.Configuration);
+
 		var identity = builder
-			.AddKeycloak("keycloak", AppHostConstants.KeycloakPort)
+			.AddKeycloak("keycloak", options.Ports.Keycloak)
 			.WithEnvironment(EnvironmentVariableNames.KcHttpEnabled, "true")
 			.WithEnvironment(EnvironmentVariableNames.KcHostnameStrict, "false")
-			.WithEnvironment(EnvironmentVariableNames.VirtualHost, AppHostConstants.IdentityVirtualHost)
-			.WithEnvironment(EnvironmentVariableNames.VirtualPort, AppHostConstants.KeycloakInternalHttpPort.ToString())
+			.WithEnvironment(EnvironmentVariableNames.VirtualHost, options.VirtualHosts.Identity)
+			.WithEnvironment(EnvironmentVariableNames.VirtualPort, options.Ports.KeycloakInternal.ToString())
 			.WithRealmImport("../infra/realms")
 			.WithDataVolume("keycloak-data");
 
 		var database = builder
-			.AddPostgres("postgres", port: AppHostConstants.PostgresPort)
+			.AddPostgres("postgres", port: options.Ports.Postgres)
 			.WithDataVolume("postgres-data")
 			.WithPgAdmin(pgAdmin => pgAdmin
-				.WithHostPort(AppHostConstants.PgAdminPort)
-				.WithImageTag(AppHostConstants.ImageTags.PgAdmin));
+				.WithHostPort(options.Ports.PgAdmin)
+				.WithImageTag(options.ImageTags.PgAdmin));
 
 		var questionsDb = database.AddDatabase("question-db");
 
@@ -30,16 +32,16 @@ internal static class InfrastructureExtensions
 
 		var searchEngine = builder
 			.AddContainer("typesense", "typesense/typesense")
-			.WithImageTag(AppHostConstants.ImageTags.Typesense)
+			.WithImageTag(options.ImageTags.Typesense)
 			.WithArgs("--data-dir", "/data", "--enable-cors")
 			.WithEnvironment(EnvironmentVariableNames.TypesenseApiKey, typesenseApiKey)
 			.WithVolume("typesense-data", "/data")
-			.WithHttpEndpoint(AppHostConstants.TypesensePort, AppHostConstants.TypesensePort, name: AppHostConstants.TypesenseEndpointName);
+			.WithHttpEndpoint(options.Ports.Typesense, options.Ports.Typesense, name: AppHostConstants.TypesenseEndpointName);
 
 		var messageBus = builder
 			.AddRabbitMQ("messaging")
 			.WithDataVolume("rabbitmq-data")
-			.WithManagementPlugin(port: AppHostConstants.RabbitMqManagementPort);
+			.WithManagementPlugin(port: options.Ports.RabbitMqManagement);
 
 		return new AppInfrastructure(
 			database,

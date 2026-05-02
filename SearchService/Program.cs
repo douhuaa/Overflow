@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
 using Common;
+using Microsoft.Extensions.Options;
+using SearchService.Configuration;
 using SearchService.Data;
 using SearchService.Models;
 using Typesense;
@@ -11,20 +13,28 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.AddServiceDefaults();
 
+// Register typed options for Typesense connection.
+// ApiKey is a secret injected by Aspire at runtime via the "Typesense__ApiKey" environment variable
+// (maps to TypesenseOptions.ApiKey through ASP.NET Core config binding convention).
+builder.Services.AddOptions<TypesenseOptions>()
+	.BindConfiguration(TypesenseOptions.SectionName)
+	.ValidateDataAnnotations()
+	.ValidateOnStart();
+
 var typesenseUri = builder.Configuration["services:typesense:typesense:0"];
 
 if (string.IsNullOrWhiteSpace(typesenseUri))
-	throw new InvalidOperationException("typesense URI is not found in config");
+	throw new InvalidOperationException("Typesense URI is not found in config");
 
-var typesenseApiKey = builder.Configuration["typesense-api-key"];
-
-if (string.IsNullOrWhiteSpace(typesenseApiKey))
-	throw new InvalidOperationException("typesense API key is not found in config");
+var typesenseOptions = builder.Configuration
+	.GetSection(TypesenseOptions.SectionName)
+	.Get<TypesenseOptions>()
+	?? throw new InvalidOperationException("Typesense options are not configured");
 
 var uri = new Uri(typesenseUri);
 builder.Services.AddTypesenseClient(config =>
 {
-	config.ApiKey = typesenseApiKey;
+	config.ApiKey = typesenseOptions.ApiKey;
 	config.Nodes =
 	[
 		new Node(uri.Host, uri.Port.ToString(), uri.Scheme)
@@ -101,3 +111,4 @@ var client = scope.ServiceProvider.GetRequiredService<ITypesenseClient>();
 await SearchInitializer.EnsureIndexExists(client);
 
 app.Run();
+
