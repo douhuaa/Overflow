@@ -12,11 +12,12 @@ internal static class ReverseProxyExtensions
 			return;
 		}
 
+		var options = AppHostOptions.FromConfiguration(builder.Configuration);
 		builder
-			.AddContainer("nginx-proxy", "nginxproxy/nginx-proxy", AppHostConstants.ImageTags.NginxProxy)
+			.AddContainer("nginx-proxy", "nginxproxy/nginx-proxy", options.ImageTags.NginxProxy)
 			.WithEndpoint(
-				port: AppHostConstants.NginxProxyPort,
-				targetPort: AppHostConstants.NginxProxyPort,
+				port: options.Ports.NginxProxy,
+				targetPort: options.Ports.NginxProxy,
 				scheme: "http",
 				name: "nginx",
 				isExternal: true)

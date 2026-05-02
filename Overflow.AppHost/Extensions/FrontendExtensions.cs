@@ -9,9 +9,10 @@ internal static class FrontendExtensions
 		this IDistributedApplicationBuilder builder,
 		IResourceBuilder<KeycloakResource> identity)
 	{
+		var options = AppHostOptions.FromConfiguration(builder.Configuration);
 		builder
 			.AddNpmApp("webapp", "../webapp", "dev")
 			.WithReference(identity)
-			.WithHttpEndpoint(env: EnvironmentVariableNames.Port, port: AppHostConstants.WebAppPort);
+			.WithHttpEndpoint(env: EnvironmentVariableNames.Port, port: options.Ports.WebApp);
 	}
 }

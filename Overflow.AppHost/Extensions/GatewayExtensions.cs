@@ -9,16 +9,17 @@ internal static class GatewayExtensions
 		this IDistributedApplicationBuilder builder,
 		AppSlices slices)
 	{
-		var aspNetCoreUrls = $"http://*:{AppHostConstants.GatewayPort}";
+		var options = AppHostOptions.FromConfiguration(builder.Configuration);
+		var aspNetCoreUrls = $"http://*:{options.Ports.Gateway}";
 		builder
 			.AddYarp("gateway")
 			.WithConfiguration(yarp => MapGatewayRoutes(yarp, slices))
 			.WithEnvironment(EnvironmentVariableNames.AspNetCoreUrls, aspNetCoreUrls)
-			.WithEnvironment(EnvironmentVariableNames.VirtualHost, AppHostConstants.ApiVirtualHost)
-			.WithEnvironment(EnvironmentVariableNames.VirtualPort, AppHostConstants.GatewayPort.ToString())
+			.WithEnvironment(EnvironmentVariableNames.VirtualHost, options.VirtualHosts.Api)
+			.WithEnvironment(EnvironmentVariableNames.VirtualPort, options.Ports.Gateway.ToString())
 			.WithEndpoint(
-				port: AppHostConstants.GatewayPort,
-				targetPort: AppHostConstants.GatewayPort,
+				port: options.Ports.Gateway,
+				targetPort: options.Ports.Gateway,
 				scheme: "http",
 				name: "gateway",
 				isExternal: true);

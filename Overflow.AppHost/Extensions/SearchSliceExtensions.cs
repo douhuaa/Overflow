@@ -12,7 +12,9 @@ internal static class SearchSliceExtensions
 	{
 		return builder
 			.AddProject<SearchService>("search-service")
-			.WithEnvironment(EnvironmentVariableNames.TypesenseApiKey, infra.TypesenseApiKey)
+			// Inject the Typesense API key using the ASP.NET Core double-underscore convention
+			// so it maps to TypesenseOptions.ApiKey (section "Typesense", property "ApiKey") in the service.
+			.WithEnvironment("Typesense__ApiKey", infra.TypesenseApiKey)
 			.WithReference(infra.RabbitMq)
 			.WaitFor(infra.RabbitMq)
 			.WithReference(infra.TypesenseEndpoint)
