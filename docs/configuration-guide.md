@@ -14,13 +14,18 @@ typed Options classes bound from `appsettings.json`.
 
 | Options class        | Config section             | Description                                |
 |----------------------|----------------------------|--------------------------------------------|
+| `AppHostOptions`     | `AppHost`                  | Dashboard port; aggregates Gateway/Frontend/ReverseProxy |
+| `GatewayOptions`     | `AppHost:Gateway`          | Gateway port, API virtual host             |
+| `FrontendOptions`    | `AppHost:Frontend`         | Web app port                               |
+| `ReverseProxyOptions`| `AppHost:ReverseProxy`     | Nginx proxy port, image tag                |
 | `IdentityOptions`    | `Infrastructure:Identity`  | Keycloak host port, internal port, vhost   |
 | `PostgresOptions`    | `Infrastructure:Postgres`  | Postgres port, pgAdmin port & image tag    |
 | `TypesenseOptions`   | `Infrastructure:Typesense` | Typesense port, image tag, endpoint name   |
 | `RabbitMqOptions`    | `Infrastructure:RabbitMq`  | RabbitMQ management port                   |
 
 These values are read in `AppHost.cs` via `IConfiguration.GetSection(...).Bind(...)` and passed
-into `AddInfrastructure(options)` at startup.
+into `AddInfrastructure(options)` at startup. Similarly, `AppHostOptions` is bound and passed to
+`AddAppEnvironment`, `AddGateway`, `AddFrontend`, and `AddReverseProxyIfNeeded`.
 
 **Default values** are declared in two places:
 - As C# property initializers in the Options class (fallback when no config is present)
@@ -28,7 +33,7 @@ into `AddInfrastructure(options)` at startup.
 
 **Overriding defaults** — use any standard .NET configuration source:
 - `appsettings.Development.json` for local developer overrides
-- Environment variables (e.g. `Infrastructure__Typesense__Port=9999`)
+- Environment variables (e.g. `Infrastructure__Typesense__Port=9999`, `AppHost__Gateway__Port=9000`)
 - Any other `IConfiguration` provider
 
 ### 2. Sensitive configuration — Aspire Parameters
