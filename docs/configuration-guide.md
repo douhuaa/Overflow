@@ -9,7 +9,7 @@ defaults, local overrides, and secrets.
 
 ### 1. Non-sensitive configuration — Options objects
 
-Ports, image tags, virtual hosts, and endpoint names are **non-sensitive** and are expressed as
+Ports, image tags, and virtual hosts are **non-sensitive** and are expressed as
 typed Options classes bound from `appsettings.json`.
 
 | Options class        | Config section             | Description                                |
@@ -20,7 +20,7 @@ typed Options classes bound from `appsettings.json`.
 | `ReverseProxyOptions`| `AppHost:ReverseProxy`     | Nginx proxy port, image tag                |
 | `IdentityOptions`    | `Infrastructure:Identity`  | Keycloak host port, internal port, vhost   |
 | `PostgresOptions`    | `Infrastructure:Postgres`  | Postgres port, pgAdmin port & image tag    |
-| `TypesenseOptions`   | `Infrastructure:Typesense` | Typesense port, image tag, endpoint name   |
+| `TypesenseOptions`   | `Infrastructure:Typesense` | Typesense port, image tag                  |
 | `RabbitMqOptions`    | `Infrastructure:RabbitMq`  | RabbitMQ management port                   |
 
 These values are read in `AppHost.cs` via `IConfiguration.GetSection(...).Bind(...)` and passed
@@ -54,10 +54,9 @@ Resource logical names, environment-variable keys, and Aspire parameter names th
 
 | Class                   | Contents                                                |
 |-------------------------|---------------------------------------------------------|
-| `AppHostResourceNames`  | Aspire resource names (`"keycloak"`, `"postgres"`, …)  |
+| `AppHostResourceNames`  | Aspire resource names (`"keycloak"`, `"postgres"`, `"typesense"`, …) |
 | `SecretParameterNames`  | Aspire secret parameter names (`"typesense-api-key"`)  |
 | `EnvironmentVariableNames` | In-process env-var keys (`TYPESENSE_API_KEY`, …)    |
-| `AppHostConstants`      | Gateway/frontend/proxy ports and virtual hosts          |
 
 ---
 
@@ -93,5 +92,5 @@ When adding a new resource, decide which category its config belongs to:
 | Resource logical name              | `AppHostResourceNames`                       |
 
 **Convention**:
-- Do not add new sensitive values to `AppHostConstants` or `appsettings.json`.
+- Do not add new sensitive values to `appsettings.json`.
 - Do not hard-code ports or image tags as `static const` — put them in Options.

@@ -39,7 +39,7 @@ internal static class InfrastructureExtensions
 			.WithArgs("--data-dir", "/data", "--enable-cors")
 			.WithEnvironment(EnvironmentVariableNames.TypesenseApiKey, typesenseApiKey)
 			.WithVolume("typesense-data", "/data")
-			.WithHttpEndpoint(options.Typesense.Port, options.Typesense.Port, name: options.Typesense.EndpointName);
+			.WithHttpEndpoint(options.Typesense.Port, options.Typesense.Port, name: AppHostResourceNames.Typesense);
 
 		var messageBus = builder
 			.AddRabbitMQ(AppHostResourceNames.Messaging)
@@ -52,7 +52,6 @@ internal static class InfrastructureExtensions
 			messageBus,
 			identity,
 			searchEngine,
-			typesenseApiKey,
-			options.Typesense.EndpointName);
+			typesenseApiKey);
 	}
 }
