@@ -1,4 +1,5 @@
 using Overflow.AppHost.Configuration;
+using Overflow.AppHost.Configuration.Options;
 using Overflow.AppHost.Models;
 
 namespace Overflow.AppHost.Extensions;
@@ -7,18 +8,19 @@ internal static class GatewayExtensions
 {
 	public static void AddGateway(
 		this IDistributedApplicationBuilder builder,
-		AppSlices slices)
+		AppSlices slices,
+		GatewayOptions options)
 	{
-		var aspNetCoreUrls = $"http://*:{AppHostConstants.GatewayPort}";
+		var aspNetCoreUrls = $"http://*:{options.Port}";
 		builder
-			.AddYarp("gateway")
+			.AddYarp(AppHostResourceNames.Gateway)
 			.WithConfiguration(yarp => MapGatewayRoutes(yarp, slices))
 			.WithEnvironment(EnvironmentVariableNames.AspNetCoreUrls, aspNetCoreUrls)
-			.WithEnvironment(EnvironmentVariableNames.VirtualHost, AppHostConstants.ApiVirtualHost)
-			.WithEnvironment(EnvironmentVariableNames.VirtualPort, AppHostConstants.GatewayPort.ToString())
+			.WithEnvironment(EnvironmentVariableNames.VirtualHost, options.VirtualHost)
+			.WithEnvironment(EnvironmentVariableNames.VirtualPort, options.Port.ToString())
 			.WithEndpoint(
-				port: AppHostConstants.GatewayPort,
-				targetPort: AppHostConstants.GatewayPort,
+				port: options.Port,
+				targetPort: options.Port,
 				scheme: "http",
 				name: "gateway",
 				isExternal: true);
